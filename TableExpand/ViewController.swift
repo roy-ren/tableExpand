@@ -67,19 +67,47 @@ class ViewController: UIViewController {
 	typealias Change = UpdateNodesChange
 	var viewModel: ViewModel?
 	let tableView = UITableView()
+	private let newView = UIView()
+	private var listView: MenuCostomerListSelectorView<Int>?
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		addTableView()
+		
+		newView.ok.added(to: view, layout: {
+			$0.leading.trailing.equalToSuperview()
+			$0.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+			$0.height.equalTo(100)
+		}, config: {
+			$0.backgroundColor = .purple
+		})
 	}
 
 	@IBAction func change(_ sender: Any) {
-		viewModel = .init() { [weak self] in
-			guard let self = self else { return }
-			self.updateTable(of: $0)
+//		viewModel = .init() { [weak self] in
+//			guard let self = self else { return }
+//			self.updateTable(of: $0)
+//		}
+//
+//		tableView.reloadData()
+		
+		if let view = listView {
+			view.hide()
+			listView = nil
+			return
 		}
 		
-		tableView.reloadData()
+		let listFilterView = MenuCostomerListSelectorView(
+			elements: [0, 1, 2, 3, 4, 5, 6],
+			selectedIndex: 2
+		)
+		
+		listFilterView.show(on: view) {
+			$0.leading.trailing.bottom.equalToSuperview()
+			$0.top.equalTo(self.newView.snp.bottom)
+		}
+		
+		listView = listFilterView
 	}
 	
 	func updateTable(of change: Change) {
@@ -138,7 +166,8 @@ extension ViewController: UITableViewDataSource {
 	}
 	
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		viewModel?.expandNodes.count ?? 0
+//		viewModel?.expandNodes.count ?? 0
+		30
 	}
 }
 
